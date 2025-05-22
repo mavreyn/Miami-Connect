@@ -27,7 +27,6 @@
 		}
 		else
 		{
-			// TODO: Handle the empty fields case
 			$stmt = $conn->prepare("INSERT INTO Users (firstName,lastName,login,password) VALUES(?,?,?,?)");
 			$stmt->bind_param("ssss", $firstName, $lastName, $login, $password);
 			$stmt->execute();
