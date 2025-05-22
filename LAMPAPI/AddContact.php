@@ -16,7 +16,6 @@
 	}
 	else
 	{
-		// TODO: Handle the empty fields case
 		$stmt = $conn->prepare("INSERT INTO Contacts (firstName,lastName,phone,email,userId) VALUES(?,?,?,?,?)");
 		$stmt->bind_param("sssss", $firstName, $lastName, $phone, $email, $userId);
 		$stmt->execute();
