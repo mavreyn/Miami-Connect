@@ -196,3 +196,13 @@ function searchColor()
 	}
 	
 }
+
+// Dashboard initialization
+window.addEventListener('load', function() {
+    if (document.getElementById('userFullName')) {  // Check if we're on the dashboard page
+        readCookie();
+        // Update additional user info
+        document.getElementById('userFullName').textContent = firstName + ' ' + lastName;
+        document.getElementById('userId').textContent = userId;
+    }
+});
