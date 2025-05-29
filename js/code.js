@@ -5,6 +5,8 @@ let userId = 0;
 let firstName = "";
 let lastName = "";
 
+let deleteContactData = null;
+
 function doLogin()
 {
 	userId = 0;
@@ -121,36 +123,248 @@ function doLogout()
 	window.location.href = "index.html";
 }
 
-function addColor()
-{
-	let newColor = document.getElementById("colorText").value;
-	document.getElementById("colorAddResult").innerHTML = "";
-
-	let tmp = {color:newColor,userId,userId};
-	let jsonPayload = JSON.stringify( tmp );
-
-	let url = urlBase + '/AddColor.' + extension;
-	
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", url, true);
-	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-	try
-	{
-		xhr.onreadystatechange = function() 
-		{
-			if (this.readyState == 4 && this.status == 200) 
-			{
-				document.getElementById("colorAddResult").innerHTML = "Color has been added";
-			}
-		};
-		xhr.send(jsonPayload);
-	}
-	catch(err)
-	{
-		document.getElementById("colorAddResult").innerHTML = err.message;
-	}
-	
+function showAddContact() {
+    // Clear previous form data and messages
+    document.getElementById("addContactForm").reset();
+    document.getElementById("addContactResult").style.display = "none";
+    
+    // Show the modal
+    let modal = new bootstrap.Modal(document.getElementById('addContactModal'));
+    modal.show();
 }
+
+function addContact() {
+    let firstName = document.getElementById("firstName").value;
+    let lastName = document.getElementById("lastName").value;
+    let email = document.getElementById("email").value;
+    let phone = document.getElementById("phone").value;
+
+    // Basic validation
+    if (!firstName || !lastName || !email || !phone) {
+        document.getElementById("addContactResult").innerHTML = "All fields are required";
+        document.getElementById("addContactResult").className = "alert alert-danger";
+        document.getElementById("addContactResult").style.display = "block";
+        return;
+    }
+
+    let tmp = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        userId: userId
+    };
+    let jsonPayload = JSON.stringify(tmp);
+
+    let url = urlBase + '/AddContact.' + extension;
+    
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    
+    try {
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    let jsonObject = JSON.parse(xhr.responseText);
+                    
+                    if (jsonObject.error) {
+                        document.getElementById("addContactResult").innerHTML = jsonObject.error;
+                        document.getElementById("addContactResult").className = "alert alert-danger";
+                        document.getElementById("addContactResult").style.display = "block";
+                        return;
+                    }
+                    
+                    // Success! Clear form and show success message
+                    document.getElementById("addContactResult").innerHTML = "Contact added successfully!";
+                    document.getElementById("addContactResult").className = "alert alert-success";
+                    document.getElementById("addContactResult").style.display = "block";
+                    
+                    // Clear the form
+                    document.getElementById("addContactForm").reset();
+                    
+                    // Update the search results to show the new contact
+                    let searchInput = document.getElementById("searchInput");
+                    if (searchInput) {
+                        searchContacts(searchInput.value);
+                    }
+                    
+                    // Close the modal after a short delay
+                    setTimeout(function() {
+                        let modal = bootstrap.Modal.getInstance(document.getElementById('addContactModal'));
+                        modal.hide();
+                        
+                        // Clear the success message after hiding
+                        document.getElementById("addContactResult").style.display = "none";
+                    }, 1500);
+                    
+                } else {
+                    document.getElementById("addContactResult").innerHTML = "Error adding contact: " + this.status;
+                    document.getElementById("addContactResult").className = "alert alert-danger";
+                    document.getElementById("addContactResult").style.display = "block";
+                }
+            }
+        };
+        xhr.send(jsonPayload);
+    }
+    catch(err) {
+        document.getElementById("addContactResult").innerHTML = err.message;
+        document.getElementById("addContactResult").className = "alert alert-danger";
+        document.getElementById("addContactResult").style.display = "block";
+    }
+}
+
+function showDeleteConfirmation(firstName, lastName, phone, email) {
+    // Store the contact data for deletion
+    deleteContactData = {
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        email: email
+    };
+    
+    // Set the contact name in the modal
+    document.getElementById("deleteContactName").textContent = `${firstName} ${lastName}`;
+    
+    // Show the modal
+    let modal = new bootstrap.Modal(document.getElementById('deleteContactModal'));
+    modal.show();
+}
+
+function deleteContact() {
+    // If no contact data, return
+    if (!deleteContactData) return;
+    
+    // Get the modal instance to close it later
+    let modal = bootstrap.Modal.getInstance(document.getElementById('deleteContactModal'));
+    
+    // Disable the confirm button and show loading state
+    let confirmBtn = document.getElementById("confirmDeleteBtn");
+    let originalText = confirmBtn.innerHTML;
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = `
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Deleting...
+    `;
+
+    let tmp = {
+        firstName: deleteContactData.firstName,
+        lastName: deleteContactData.lastName,
+        phone: deleteContactData.phone,
+        email: deleteContactData.email,
+        userId: userId
+    };
+    let jsonPayload = JSON.stringify(tmp);
+
+    let url = urlBase + '/DeleteContact.' + extension;
+    
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    
+    try {
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                // Reset button state
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalText;
+                
+                if (this.status == 200) {
+                    let jsonObject = JSON.parse(xhr.responseText);
+                    
+                    if (jsonObject.error && jsonObject.error !== "") {
+                        // Show error in a temporary alert
+                        let alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                        alertDiv.setAttribute('role', 'alert');
+                        alertDiv.innerHTML = `
+                            Error deleting contact: ${jsonObject.error}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        `;
+                        document.body.appendChild(alertDiv);
+                        
+                        // Remove the alert after 3 seconds
+                        setTimeout(() => alertDiv.remove(), 3000);
+                        
+                        // Close the modal
+                        modal.hide();
+                        return;
+                    }
+                    
+                    // Success - refresh the search results
+                    let searchInput = document.getElementById("searchInput");
+                    if (searchInput) {
+                        searchContacts(searchInput.value);
+                    }
+                    
+                    // Show success message
+                    let alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alertDiv.setAttribute('role', 'alert');
+                    alertDiv.innerHTML = `
+                        Contact deleted successfully
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    
+                    // Remove the success message after 3 seconds
+                    setTimeout(() => alertDiv.remove(), 3000);
+                    
+                    // Close the modal
+                    modal.hide();
+                    
+                } else {
+                    // Show error in a temporary alert
+                    let alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alertDiv.setAttribute('role', 'alert');
+                    alertDiv.innerHTML = `
+                        Error deleting contact: Server returned status ${this.status}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    
+                    // Remove the alert after 3 seconds
+                    setTimeout(() => alertDiv.remove(), 3000);
+                    
+                    // Close the modal
+                    modal.hide();
+                }
+            }
+        };
+        xhr.send(jsonPayload);
+    }
+    catch(err) {
+        // Reset button state
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = originalText;
+        
+        // Show error in a temporary alert
+        let alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            Error deleting contact: ${err.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        // Remove the alert after 3 seconds
+        setTimeout(() => alertDiv.remove(), 3000);
+        console.error("Delete error:", err);
+        
+        // Close the modal
+        modal.hide();
+    }
+    
+    // Clear the stored contact data
+    deleteContactData = null;
+}
+
+// Add event listener for the confirm delete button when the page loads
+window.addEventListener('load', function() {
+    document.getElementById('confirmDeleteBtn').addEventListener('click', deleteContact);
+});
 
 function searchContacts(searchText) {
     // Don't search if the search text is empty
@@ -224,7 +438,7 @@ function searchContacts(searchText) {
                         let actionsCell = document.createElement("td");
                         actionsCell.innerHTML = `
                             <button class="btn btn-sm btn-primary me-2" onclick="editContact(${contact.ID})">Edit</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteContact(${contact.ID})">Delete</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('${contact.FirstName}', '${contact.LastName}', '${contact.Phone}', '${contact.Email}')">Delete</button>
                         `;
                         
                         // Add cells to row

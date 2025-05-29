@@ -24,8 +24,7 @@
 	}
 	else
 	{
-		// $stmt = $conn->prepare("DELETE FROM Contacts WHERE (firstName, lastName, phone, email, userId) LIKE VALUES (?,?,?,?,?)");
-		$stmt = $conn->prepare("DELETE FROM Contacts WHERE (firstName=? AND lastName=? AND phone=? AND email=? AND userId=?");
+		$stmt = $conn->prepare("DELETE FROM Contacts WHERE firstName=? AND lastName=? AND phone=? AND email=? AND userId=?");
 		$stmt->bind_param("sssss", $firstName, $lastName, $phone, $email, $userId);
 		$stmt->execute();
 		$stmt->close();
