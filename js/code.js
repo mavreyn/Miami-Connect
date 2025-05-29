@@ -6,6 +6,7 @@ let firstName = "";
 let lastName = "";
 
 let deleteContactData = null;
+let editContactData = null;
 
 function doLogin()
 {
@@ -366,6 +367,141 @@ window.addEventListener('load', function() {
     document.getElementById('confirmDeleteBtn').addEventListener('click', deleteContact);
 });
 
+function showEditContact(firstName, lastName, phone, email) {
+    // Store the original contact data for the update
+    editContactData = {
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        email: email
+    };
+    
+    // Populate the form with current contact data
+    document.getElementById("editFirstName").value = firstName;
+    document.getElementById("editLastName").value = lastName;
+    document.getElementById("editEmail").value = email;
+    document.getElementById("editPhone").value = phone;
+    
+    // Clear any previous messages
+    document.getElementById("editContactResult").style.display = "none";
+    
+    // Show the modal
+    let modal = new bootstrap.Modal(document.getElementById('editContactModal'));
+    modal.show();
+}
+
+function updateContact() {
+    // If no contact data, return
+    if (!editContactData) return;
+    
+    // Get the modal instance to close it later
+    let modal = bootstrap.Modal.getInstance(document.getElementById('editContactModal'));
+    
+    // Get updated values
+    let firstName = document.getElementById("editFirstName").value;
+    let lastName = document.getElementById("editLastName").value;
+    let email = document.getElementById("editEmail").value;
+    let phone = document.getElementById("editPhone").value;
+
+    // Basic validation
+    if (!firstName || !lastName || !email || !phone) {
+        document.getElementById("editContactResult").innerHTML = "All fields are required";
+        document.getElementById("editContactResult").className = "alert alert-danger";
+        document.getElementById("editContactResult").style.display = "block";
+        return;
+    }
+
+    // Disable the save button and show loading state
+    let saveBtn = modal._element.querySelector('.btn-primary');
+    let originalText = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = `
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Saving...
+    `;
+
+    let tmp = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        oldFirstName: editContactData.firstName,
+        oldLastName: editContactData.lastName,
+        oldEmail: editContactData.email,
+        oldPhone: editContactData.phone,
+        userId: userId
+    };
+    let jsonPayload = JSON.stringify(tmp);
+
+    let url = urlBase + '/UpdateContact.' + extension;
+    
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    
+    try {
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                // Reset button state
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+                
+                if (this.status == 200) {
+                    let jsonObject = JSON.parse(xhr.responseText);
+                    
+                    if (jsonObject.error && jsonObject.error !== "") {
+                        document.getElementById("editContactResult").innerHTML = jsonObject.error;
+                        document.getElementById("editContactResult").className = "alert alert-danger";
+                        document.getElementById("editContactResult").style.display = "block";
+                        return;
+                    }
+                    
+                    // Success - refresh the search results
+                    let searchInput = document.getElementById("searchInput");
+                    if (searchInput) {
+                        searchContacts(searchInput.value);
+                    }
+                    
+                    // Show success message
+                    let alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alertDiv.setAttribute('role', 'alert');
+                    alertDiv.innerHTML = `
+                        Contact updated successfully
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    
+                    // Remove the success message after 3 seconds
+                    setTimeout(() => alertDiv.remove(), 3000);
+                    
+                    // Close the modal
+                    modal.hide();
+                    
+                    // Clear the stored contact data
+                    editContactData = null;
+                    
+                } else {
+                    document.getElementById("editContactResult").innerHTML = "Error updating contact: " + this.status;
+                    document.getElementById("editContactResult").className = "alert alert-danger";
+                    document.getElementById("editContactResult").style.display = "block";
+                }
+            }
+        };
+        xhr.send(jsonPayload);
+    }
+    catch(err) {
+        // Reset button state
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
+        
+        document.getElementById("editContactResult").innerHTML = err.message;
+        document.getElementById("editContactResult").className = "alert alert-danger";
+        document.getElementById("editContactResult").style.display = "block";
+        console.error("Update error:", err);
+    }
+}
+
 function searchContacts(searchText) {
     // Don't search if the search text is empty
     if (!searchText.trim()) {
@@ -437,7 +573,7 @@ function searchContacts(searchText) {
                         
                         let actionsCell = document.createElement("td");
                         actionsCell.innerHTML = `
-                            <button class="btn btn-sm btn-primary me-2" onclick="editContact(${contact.ID})">Edit</button>
+                            <button class="btn btn-sm btn-primary me-2" onclick="showEditContact('${contact.FirstName}', '${contact.LastName}', '${contact.Phone}', '${contact.Email}')">Edit</button>
                             <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('${contact.FirstName}', '${contact.LastName}', '${contact.Phone}', '${contact.Email}')">Delete</button>
                         `;
                         

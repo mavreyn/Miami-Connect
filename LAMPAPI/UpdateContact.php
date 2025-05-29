@@ -11,12 +11,16 @@
 
 	$inData = getRequestInfo();
 
-	// TODO: Also get the old fields to search for the id?
+	// Get both new and old contact information
 	$newFirstName = $inData["firstName"];
 	$newLastName = $inData["lastName"];
 	$newPhone = $inData["phone"];
 	$newEmail = $inData["email"];
-	$id = 0;
+	$oldFirstName = $inData["oldFirstName"];
+	$oldLastName = $inData["oldLastName"];
+	$oldPhone = $inData["oldPhone"];
+	$oldEmail = $inData["oldEmail"];
+	$userId = $inData["userId"];
 
 	$conn = new mysqli("localhost", "TheBeast", "WeLoveCOP4331", "COP4331");
 	if( $conn->connect_error )
@@ -25,14 +29,20 @@
 	}
 	else
 	{
-		// TODO: Get the ID from the entry by...?
-		$id = 
-		$stmt = $conn->prepare("UPDATE Contacts SET firstName=?, lastName=?, phone=?, email=? WHERE ID=?");
-		$stmt->bind_param("sssss", $newFirstName, $newLastName, $newPhone, $newEmail, $id);
+		// First, find the contact using the old information
+		$stmt = $conn->prepare("UPDATE Contacts SET firstName=?, lastName=?, phone=?, email=? WHERE firstName=? AND lastName=? AND phone=? AND email=? AND userId=?");
+		$stmt->bind_param("sssssssss", $newFirstName, $newLastName, $newPhone, $newEmail, $oldFirstName, $oldLastName, $oldPhone, $oldEmail, $userId);
 		$stmt->execute();
-		$stmt->close();
-		$conn->close();
-		returnWithError("");
+		
+		if ($stmt->affected_rows > 0) {
+			$stmt->close();
+			$conn->close();
+			returnWithError("");
+		} else {
+			$stmt->close();
+			$conn->close();
+			returnWithError("Contact not found or no changes made");
+		}
 	}
 
 	function getRequestInfo()
