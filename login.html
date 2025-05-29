@@ -3,8 +3,15 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Contact Manager - Login</title>
+        <title>Miami Connect - Access Granted</title>
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
+        <link rel="manifest" href="assets/favicon/site.webmanifest">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://fonts.cdnfonts.com/css/lazer84" rel="stylesheet">
+        <link href="https://fonts.cdnfonts.com/css/eurostile" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
         <script type="text/javascript" src="js/md5.js"></script>
         <script type="text/javascript" src="js/code.js"></script>
@@ -12,35 +19,34 @@
     </head>
     <body>
         <div class="welcome-container">
-            <div class="logo-section">
-                <h1 class="display-4">Contact Manager</h1>
-                <p class="lead">Welcome back!</p>
-            </div>
+            <div class="hero-section text-center position-relative">
+                <video class="hero-background" autoplay muted loop playsinline>
+                    <source src="assets/Synthwave_Sunset_Video_Generated.mp4" type="video/mp4">
+                </video>
+                <div class="hero-content">
+                    <h1 class="display-2 text-white">Miami Connect</h1>
+                    
+                    <div class="auth-card mx-auto">
+                        <h2 class="h4">Time to Clock In</h2>
+                        <div id="loginResult" class="alert alert-danger" style="display: none;"></div>
+                        <form onsubmit="doLogin(); return false;">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="loginUsername" placeholder="Your Code Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="loginPassword" placeholder="Secret Password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Hit the Streets</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p>New to the scene? <a href="register.html">Join the Force</a></p>
+                        </div>
+                    </div>
 
-            <div class="auth-cards">
-                <!-- Login Card -->
-                <div class="auth-card">
-                    <h2 class="h4 mb-4">Login</h2>
-                    <div id="loginResult" class="alert alert-danger" style="display: none;"></div>
-                    <form onsubmit="doLogin(); return false;">
-                        <div class="form-group">
-                            <label for="loginUsername">Username</label>
-                            <input type="text" class="form-control" id="loginUsername" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="loginPassword">Password</label>
-                            <input type="password" class="form-control" id="loginPassword" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
-                    </form>
-                    <div class="text-center mt-3">
-                        <p class="mb-0">Don't have an account? <a href="register.html">Register here</a></p>
+                    <div class="text-center mt-4">
+                        <a href="index.html" class="btn btn-link text-white">Back to Base</a>
                     </div>
                 </div>
-            </div>
-
-            <div class="text-center mt-4">
-                <a href="index.html" class="btn btn-link">Back to Home</a>
             </div>
         </div>
     </body>
