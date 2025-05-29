@@ -31,7 +31,7 @@
 
 		if( $result->fetch_assoc() )
 		{
-			returnWithError("Username Found");
+			returnWithError("Username Already Exists");
 		}
 		else
 		{

@@ -1,4 +1,4 @@
-const urlBase = 'http://21project.site/LAMPAPI';
+const urlBase = 'https://21project.site/LAMPAPI';
 const extension = 'php';
 
 let userId = 0;
@@ -11,6 +11,54 @@ let editContactData = null;
 let currentPage = 1;
 const contactsPerPage = 10;
 let totalResults = 0;
+
+function isValidEmail(email) {
+    // Check if email contains @ and has a . after the @
+    const atIndex = email.indexOf('@');
+    if (atIndex === -1) return false;
+    
+    const dotIndex = email.indexOf('.', atIndex);
+    return dotIndex > atIndex;
+}
+
+function checkPasswordRequirements() {
+    const password = document.getElementById("registerPassword").value;
+    let isValid = true;
+
+    // Check length
+    const hasLength = password.length >= 8;
+    updateRequirement('lengthCheck', hasLength);
+    isValid = isValid && hasLength;
+
+    // Check for letter
+    const hasLetter = /[a-zA-Z]/.test(password);
+    updateRequirement('letterCheck', hasLetter);
+    isValid = isValid && hasLetter;
+
+    // Check for special character
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    updateRequirement('specialCheck', hasSpecial);
+    isValid = isValid && hasSpecial;
+
+    // Disable/enable register button based on validation
+    const registerBtn = document.querySelector('#registerForm button[type="submit"]');
+    if (registerBtn) {
+        registerBtn.disabled = !isValid;
+    }
+
+    return isValid;
+}
+
+function updateRequirement(requirementId, isMet) {
+    const requirement = document.getElementById(requirementId);
+    if (requirement) {
+        const icon = requirement.querySelector('.requirement-icon');
+        if (icon) {
+            icon.textContent = isMet ? '✅' : '❌';
+        }
+        requirement.querySelector('small').className = isMet ? 'text-success' : 'text-muted';
+    }
+}
 
 function doLogin()
 {
@@ -36,6 +84,7 @@ function doLogin()
 	// Add error handling for CORS
 	xhr.onerror = function() {
 		document.getElementById("loginResult").innerHTML = "Error: Cannot connect to the server";
+		document.getElementById("loginResult").style.display = "block";
 	};
 	
 	try
@@ -52,7 +101,8 @@ function doLogin()
 			
 					if( userId < 1 )
 					{		
-						document.getElementById("loginResult").innerHTML = "User/Password combination incorrect";
+						document.getElementById("loginResult").innerHTML = "Invalid Username or Password";
+						document.getElementById("loginResult").style.display = "block";
 						return;
 					}
 			
@@ -64,6 +114,7 @@ function doLogin()
 					window.location.href = "contacts.html";
 				} else {
 					document.getElementById("loginResult").innerHTML = "Server returned status: " + this.status;
+					document.getElementById("loginResult").style.display = "block";
 				}
 			}
 		};
@@ -73,6 +124,7 @@ function doLogin()
 	catch(err)
 	{
 		document.getElementById("loginResult").innerHTML = err.message;
+		document.getElementById("loginResult").style.display = "block";
 		console.error("Login error:", err);
 	}
 }
@@ -153,6 +205,22 @@ function addContact() {
     // Basic validation
     if (!firstName || !lastName || !email || !phone) {
         document.getElementById("addContactResult").innerHTML = "All fields are required";
+        document.getElementById("addContactResult").className = "alert alert-danger";
+        document.getElementById("addContactResult").style.display = "block";
+        return;
+    }
+
+    // Check for whitespace-only entries
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !phone.trim()) {
+        document.getElementById("addContactResult").innerHTML = "Fields cannot be empty or contain only spaces";
+        document.getElementById("addContactResult").className = "alert alert-danger";
+        document.getElementById("addContactResult").style.display = "block";
+        return;
+    }
+
+    // Validate email
+    if (!isValidEmail(email)) {
+        document.getElementById("addContactResult").innerHTML = "Please enter a valid email address";
         document.getElementById("addContactResult").className = "alert alert-danger";
         document.getElementById("addContactResult").style.display = "block";
         return;
@@ -421,6 +489,22 @@ function updateContact() {
         return;
     }
 
+    // Check for whitespace-only entries
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !phone.trim()) {
+        document.getElementById("editContactResult").innerHTML = "Fields cannot be empty or contain only spaces";
+        document.getElementById("editContactResult").className = "alert alert-danger";
+        document.getElementById("editContactResult").style.display = "block";
+        return;
+    }
+
+    // Validate email
+    if (!isValidEmail(email)) {
+        document.getElementById("editContactResult").innerHTML = "Please enter a valid email address";
+        document.getElementById("editContactResult").className = "alert alert-danger";
+        document.getElementById("editContactResult").style.display = "block";
+        return;
+    }
+
     // Disable the save button and show loading state
     let saveBtn = modal._element.querySelector('.btn-primary');
     let originalText = saveBtn.innerHTML;
@@ -671,10 +755,27 @@ function doRegister() {
     let lastName = document.getElementById("registerLastName").value;
     let login = document.getElementById("registerUsername").value;
     let password = document.getElementById("registerPassword").value;
-    let hash = md5(password);
 
     // Clear any previous error messages
     document.getElementById("registerResult").innerHTML = "";
+    
+    // Check for whitespace-only entries
+    if (!firstName.trim() || !lastName.trim() || !login.trim()) {
+        document.getElementById("registerResult").innerHTML = "Fields cannot be empty or contain only spaces";
+        document.getElementById("registerResult").className = "alert alert-danger";
+        document.getElementById("registerResult").style.display = "block";
+        return false;
+    }
+    
+    // Validate password requirements
+    if (!checkPasswordRequirements()) {
+        document.getElementById("registerResult").innerHTML = "Please meet all password requirements";
+        document.getElementById("registerResult").className = "alert alert-danger";
+        document.getElementById("registerResult").style.display = "block";
+        return false;
+    }
+
+    let hash = md5(password);
     
     // Create the payload
     let tmp = {
@@ -719,8 +820,8 @@ function doRegister() {
                     
                     // Redirect to login after a short delay
                     setTimeout(function() {
-                        window.location.href = "auth.html";
-                    }, 2000);
+                        window.location.href = "login.html";
+                    }, 1000);
                     
                 } else {
                     document.getElementById("registerResult").innerHTML = "Server returned status: " + this.status;

@@ -84,4 +84,23 @@ body {
 .welcome-text {
     color: #6c757d;
     font-size: 1.1rem;
+}
+
+.password-requirements {
+    border-left: 3px solid #dee2e6;
+    padding-left: 10px;
+    margin-top: 10px;
+}
+
+.requirement {
+    margin-bottom: 5px;
+}
+
+.requirement-icon {
+    font-style: normal;
+    margin-right: 5px;
+}
+
+.text-success {
+    color: #198754 !important;
 } 
