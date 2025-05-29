@@ -38,7 +38,7 @@
 		$stmt->close();
 
 		// Then get paginated results
-		$stmt = $conn->prepare("SELECT * FROM Contacts WHERE (firstName LIKE ? OR lastName LIKE ?) AND UserID=? LIMIT ? OFFSET ?");
+		$stmt = $conn->prepare("SELECT * FROM Contacts WHERE (firstName LIKE ? OR lastName LIKE ?) AND UserID=? ORDER BY LastName ASC, FirstName ASC LIMIT ? OFFSET ?");
 		$stmt->bind_param("sssii", $contactName, $contactName, $inData["userId"], $limit, $offset);
 		$stmt->execute();
 		
