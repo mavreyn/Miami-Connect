@@ -13,6 +13,12 @@
 	
 	$searchResults = "";
 	$searchCount = 0;
+	$totalContacts = 0;
+
+	// Set default values for pagination
+	$page = isset($inData["page"]) ? (int)$inData["page"] : 1;
+	$limit = isset($inData["limit"]) ? (int)$inData["limit"] : 10;
+	$offset = ($page - 1) * $limit;
 
 	$conn = new mysqli("localhost", "TheBeast", "WeLoveCOP4331", "COP4331");
 	if ($conn->connect_error) 
@@ -21,9 +27,19 @@
 	} 
 	else
 	{
-		$stmt = $conn->prepare("SELECT * FROM Contacts WHERE (firstName LIKE ? OR lastName LIKE ?) AND UserID=?");
+		// First get total count
+		$stmt = $conn->prepare("SELECT COUNT(*) as total FROM Contacts WHERE (firstName LIKE ? OR lastName LIKE ?) AND UserID=?");
 		$contactName = "%" . $inData["search"] . "%";
 		$stmt->bind_param("sss", $contactName, $contactName, $inData["userId"]);
+		$stmt->execute();
+		$result = $stmt->get_result();
+		$row = $result->fetch_assoc();
+		$totalContacts = $row['total'];
+		$stmt->close();
+
+		// Then get paginated results
+		$stmt = $conn->prepare("SELECT * FROM Contacts WHERE (firstName LIKE ? OR lastName LIKE ?) AND UserID=? LIMIT ? OFFSET ?");
+		$stmt->bind_param("sssii", $contactName, $contactName, $inData["userId"], $limit, $offset);
 		$stmt->execute();
 		
 		$result = $stmt->get_result();
@@ -44,7 +60,7 @@
 		}
 		else
 		{
-			returnWithInfo( $searchResults );
+			returnWithInfo( $searchResults, $totalContacts );
 		}
 		
 		$stmt->close();
@@ -64,13 +80,13 @@
 	
 	function returnWithError( $err )
 	{
-		$retValue = '{"id":0,"firstName":"","lastName":"","error":"' . $err . '"}';
+		$retValue = '{"id":0,"firstName":"","lastName":"","error":"' . $err . '","total":0}';
 		sendResultInfoAsJson( $retValue );
 	}
 	
-	function returnWithInfo( $searchResults )
+	function returnWithInfo( $searchResults, $total )
 	{
-		$retValue = '{"results":[' . $searchResults . '],"error":""}';
+		$retValue = '{"results":[' . $searchResults . '],"error":"","total":' . $total . '}';
 		sendResultInfoAsJson( $retValue );
 	}
 	

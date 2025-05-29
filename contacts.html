@@ -6,6 +6,7 @@
         <title>Contact Manager - Dashboard</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+        <script type="text/javascript" src="js/md5.js"></script>
         <script type="text/javascript" src="js/code.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     </head>
@@ -25,9 +26,6 @@
                             <a class="nav-link" href="#" onclick="loadContacts();">My Contacts</a>
                         </li>
                     </ul>
-                    <span class="navbar-text me-3" id="userName">
-                        <!-- User name will be inserted here by JavaScript -->
-                    </span>
                     <button class="btn btn-outline-light" onclick="doLogout();">Logout</button>
                 </div>
             </div>
@@ -35,31 +33,7 @@
 
         <div class="container mt-4">
             <div class="user-info">
-                <h2>Welcome to Your Dashboard</h2>
-                <p class="welcome-text">
-                    Name: <span id="userFullName"></span><br>
-                    User ID: <span id="userId"></span>
-                </p>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Quick Stats</h5>
-                            <p class="card-text">Total Contacts: <span id="totalContacts">0</span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Quick Actions</h5>
-                            <button class="btn btn-primary me-2" onclick="showAddContact();">Add New Contact</button>
-                            <button class="btn btn-secondary" onclick="showSearchContacts();">Search Contacts</button>
-                        </div>
-                    </div>
-                </div>
+                <h1 class="display-5 mb-4">Welcome, <span id="userFullName"></span>!</h1>
             </div>
 
             <!-- Search and Results Section -->
@@ -67,18 +41,20 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Search Contacts</h5>
-                            <div class="mb-3">
+                            <h5 class="card-title">Contacts</h5>
+                            <div class="d-flex gap-2 mb-3">
                                 <input type="text" class="form-control" id="searchInput" 
                                        placeholder="Start typing to search contacts..." 
                                        oninput="searchContacts(this.value);">
+                                <button class="btn btn-primary" style="min-width: 130px;" onclick="showAddContact();">Add Contact</button>
                             </div>
                             <div id="searchResult" class="alert alert-info" style="display: none;"></div>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
                                             <th>Email</th>
                                             <th>Phone</th>
                                             <th>Actions</th>
@@ -88,6 +64,22 @@
                                         <!-- Contact rows will be inserted here by JavaScript -->
                                     </tbody>
                                 </table>
+                            </div>
+                            <!-- Add pagination controls -->
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="text-muted">
+                                    Showing <span id="startRange">0</span>-<span id="endRange">0</span> of <span id="totalContacts">0</span> contacts
+                                </div>
+                                <nav aria-label="Contact pagination">
+                                    <ul class="pagination mb-0">
+                                        <li class="page-item" id="prevPage">
+                                            <a class="page-link" href="#" onclick="changePage(-1); return false;">Previous</a>
+                                        </li>
+                                        <li class="page-item" id="nextPage">
+                                            <a class="page-link" href="#" onclick="changePage(1); return false;">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
                     </div>
@@ -100,7 +92,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addContactModalLabel">Add New Contact</h5>
+                        <h5 class="modal-title" id="addContactModalLabel">Add Contact</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">

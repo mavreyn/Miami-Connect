@@ -8,6 +8,10 @@ let lastName = "";
 let deleteContactData = null;
 let editContactData = null;
 
+let currentPage = 1;
+const contactsPerPage = 10;
+let totalResults = 0;
+
 function doLogin()
 {
 	userId = 0;
@@ -16,13 +20,12 @@ function doLogin()
 	
 	let login = document.getElementById("loginUsername").value;
 	let password = document.getElementById("loginPassword").value;
-//	var hash = md5( password );
+	let hash = md5(password);
 	
 	document.getElementById("loginResult").innerHTML = "";
 
-	let tmp = {login:login,password:password};
-//	var tmp = {login:login,password:hash};
-	let jsonPayload = JSON.stringify( tmp );
+	let tmp = {login:login,password:hash};
+	let jsonPayload = JSON.stringify(tmp);
 	
 	let url = urlBase + '/Login.' + extension;
 
@@ -111,7 +114,14 @@ function readCookie()
 	}
 	else
 	{
-		document.getElementById("userName").innerHTML = "Logged in as " + firstName + " " + lastName;
+		// Update the welcome message with the user's name
+		document.getElementById("userFullName").textContent = firstName;
+		
+		// Load contacts if search input exists
+		let searchInput = document.getElementById("searchInput");
+		if (searchInput) {
+			searchContacts(searchInput.value);
+		}
 	}
 }
 
@@ -502,29 +512,64 @@ function updateContact() {
     }
 }
 
+function changePage(direction) {
+    // direction: 1 for next, -1 for previous
+    const newPage = currentPage + direction;
+    if (newPage > 0 && (newPage - 1) * contactsPerPage < totalResults) {
+        currentPage = newPage;
+        // Get the current search text and perform the search again
+        const searchText = document.getElementById("searchInput").value;
+        searchContacts(searchText);
+    }
+}
+
+function updatePaginationControls() {
+    const startIndex = (currentPage - 1) * contactsPerPage + 1;
+    const endIndex = Math.min(currentPage * contactsPerPage, totalResults);
+    
+    // Update range and total displays
+    document.getElementById("startRange").textContent = totalResults > 0 ? startIndex : 0;
+    document.getElementById("endRange").textContent = endIndex;
+    document.getElementById("totalContacts").textContent = totalResults;
+    
+    // Update button states
+    document.getElementById("prevPage").classList.toggle("disabled", currentPage === 1);
+    document.getElementById("nextPage").classList.toggle("disabled", endIndex >= totalResults);
+}
+
 function searchContacts(searchText) {
+    // Reset page to 1 if the search text changes
+    if (this.lastSearchText !== searchText) {
+        currentPage = 1;
+        this.lastSearchText = searchText;
+    }
+
     // Don't search if the search text is empty
     if (!searchText.trim()) {
         document.getElementById("contactsTableBody").innerHTML = "";
         document.getElementById("searchResult").style.display = "none";
+        totalResults = 0;
+        updatePaginationControls();
         return;
     }
 
     // Clear any previous messages
     document.getElementById("searchResult").style.display = "none";
     
-    // Create the payload - note the userId key matches the API expectation
+    // Create the payload
     let tmp = {
         search: searchText,
-        userId: userId  // This matches the API's expected format
+        userId: userId,
+        page: currentPage,
+        limit: contactsPerPage
     };
     let jsonPayload = JSON.stringify(tmp);
     
     let url = urlBase + '/SearchContacts.' + extension;
-    
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
 				
     try {
         xhr.onreadystatechange = function() {
@@ -540,7 +585,8 @@ function searchContacts(searchText) {
                         document.getElementById("searchResult").innerHTML = jsonObject.error;
                         document.getElementById("searchResult").className = "alert alert-info";
                         document.getElementById("searchResult").style.display = "block";
-                        document.getElementById("totalContacts").textContent = "0";
+                        totalResults = 0;
+                        updatePaginationControls();
                         return;
                     }
                     
@@ -549,21 +595,28 @@ function searchContacts(searchText) {
                         document.getElementById("searchResult").innerHTML = "No contacts found";
                         document.getElementById("searchResult").className = "alert alert-info";
                         document.getElementById("searchResult").style.display = "block";
-                        document.getElementById("totalContacts").textContent = "0";
+                        totalResults = 0;
+                        updatePaginationControls();
                         return;
                     }
                     
                     // Hide the no results message if we have results
                     document.getElementById("searchResult").style.display = "none";
                     
+                    // Update total results
+                    totalResults = jsonObject.total || jsonObject.results.length;
+                    
                     // Populate the table with results
                     for (let i = 0; i < jsonObject.results.length; i++) {
                         let contact = jsonObject.results[i];
                         let row = document.createElement("tr");
                         
-                        // Create cells
-                        let nameCell = document.createElement("td");
-                        nameCell.textContent = contact.FirstName + " " + contact.LastName;
+                        // Create cells for first name and last name
+                        let firstNameCell = document.createElement("td");
+                        firstNameCell.textContent = contact.FirstName;
+                        
+                        let lastNameCell = document.createElement("td");
+                        lastNameCell.textContent = contact.LastName;
                         
                         let emailCell = document.createElement("td");
                         emailCell.textContent = contact.Email || "";
@@ -578,7 +631,8 @@ function searchContacts(searchText) {
                         `;
                         
                         // Add cells to row
-                        row.appendChild(nameCell);
+                        row.appendChild(firstNameCell);
+                        row.appendChild(lastNameCell);
                         row.appendChild(emailCell);
                         row.appendChild(phoneCell);
                         row.appendChild(actionsCell);
@@ -587,12 +641,15 @@ function searchContacts(searchText) {
                         tableBody.appendChild(row);
                     }
                     
-                    // Update total contacts count
-                    document.getElementById("totalContacts").textContent = jsonObject.results.length;
+                    // Update pagination controls
+                    updatePaginationControls();
+                    
                 } else {
                     document.getElementById("searchResult").innerHTML = "Error searching contacts: " + this.status;
                     document.getElementById("searchResult").className = "alert alert-danger";
                     document.getElementById("searchResult").style.display = "block";
+                    totalResults = 0;
+                    updatePaginationControls();
                 }
             }
         };
@@ -603,6 +660,8 @@ function searchContacts(searchText) {
         document.getElementById("searchResult").className = "alert alert-danger";
         document.getElementById("searchResult").style.display = "block";
         console.error("Search error:", err);
+        totalResults = 0;
+        updatePaginationControls();
     }
 }
 
@@ -612,6 +671,7 @@ function doRegister() {
     let lastName = document.getElementById("registerLastName").value;
     let login = document.getElementById("registerUsername").value;
     let password = document.getElementById("registerPassword").value;
+    let hash = md5(password);
 
     // Clear any previous error messages
     document.getElementById("registerResult").innerHTML = "";
@@ -621,7 +681,7 @@ function doRegister() {
         firstName: firstName,
         lastName: lastName,
         login: login,
-        password: password
+        password: hash
     };
     let jsonPayload = JSON.stringify(tmp);
     
