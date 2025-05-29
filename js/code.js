@@ -152,49 +152,181 @@ function addColor()
 	
 }
 
-function searchColor()
-{
-	let srch = document.getElementById("searchText").value;
-	document.getElementById("colorSearchResult").innerHTML = "";
-	
-	let colorList = "";
+function searchContacts(searchText) {
+    // Don't search if the search text is empty
+    if (!searchText.trim()) {
+        document.getElementById("contactsTableBody").innerHTML = "";
+        document.getElementById("searchResult").style.display = "none";
+        return;
+    }
 
-	let tmp = {search:srch,userId:userId};
-	let jsonPayload = JSON.stringify( tmp );
+    // Clear any previous messages
+    document.getElementById("searchResult").style.display = "none";
+    
+    // Create the payload - note the userId key matches the API expectation
+    let tmp = {
+        search: searchText,
+        userId: userId  // This matches the API's expected format
+    };
+    let jsonPayload = JSON.stringify(tmp);
+    
+    let url = urlBase + '/SearchContacts.' + extension;
+    
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+				
+    try {
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    let jsonObject = JSON.parse(xhr.responseText);
+                    
+                    // Clear the table body
+                    let tableBody = document.getElementById("contactsTableBody");
+                    tableBody.innerHTML = "";
+                    
+                    if (jsonObject.error && jsonObject.error !== "") {
+                        document.getElementById("searchResult").innerHTML = jsonObject.error;
+                        document.getElementById("searchResult").className = "alert alert-info";
+                        document.getElementById("searchResult").style.display = "block";
+                        document.getElementById("totalContacts").textContent = "0";
+                        return;
+                    }
+                    
+                    // Make sure we have results
+                    if (!jsonObject.results || jsonObject.results.length === 0) {
+                        document.getElementById("searchResult").innerHTML = "No contacts found";
+                        document.getElementById("searchResult").className = "alert alert-info";
+                        document.getElementById("searchResult").style.display = "block";
+                        document.getElementById("totalContacts").textContent = "0";
+                        return;
+                    }
+                    
+                    // Hide the no results message if we have results
+                    document.getElementById("searchResult").style.display = "none";
+                    
+                    // Populate the table with results
+                    for (let i = 0; i < jsonObject.results.length; i++) {
+                        let contact = jsonObject.results[i];
+                        let row = document.createElement("tr");
+                        
+                        // Create cells
+                        let nameCell = document.createElement("td");
+                        nameCell.textContent = contact.FirstName + " " + contact.LastName;
+                        
+                        let emailCell = document.createElement("td");
+                        emailCell.textContent = contact.Email || "";
+                        
+                        let phoneCell = document.createElement("td");
+                        phoneCell.textContent = contact.Phone || "";
+                        
+                        let actionsCell = document.createElement("td");
+                        actionsCell.innerHTML = `
+                            <button class="btn btn-sm btn-primary me-2" onclick="editContact(${contact.ID})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteContact(${contact.ID})">Delete</button>
+                        `;
+                        
+                        // Add cells to row
+                        row.appendChild(nameCell);
+                        row.appendChild(emailCell);
+                        row.appendChild(phoneCell);
+                        row.appendChild(actionsCell);
+                        
+                        // Add row to table
+                        tableBody.appendChild(row);
+                    }
+                    
+                    // Update total contacts count
+                    document.getElementById("totalContacts").textContent = jsonObject.results.length;
+                } else {
+                    document.getElementById("searchResult").innerHTML = "Error searching contacts: " + this.status;
+                    document.getElementById("searchResult").className = "alert alert-danger";
+                    document.getElementById("searchResult").style.display = "block";
+                }
+            }
+        };
+        xhr.send(jsonPayload);
+    }
+    catch(err) {
+        document.getElementById("searchResult").innerHTML = err.message;
+        document.getElementById("searchResult").className = "alert alert-danger";
+        document.getElementById("searchResult").style.display = "block";
+        console.error("Search error:", err);
+    }
+}
 
-	let url = urlBase + '/SearchColors.' + extension;
-	
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", url, true);
-	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-	try
-	{
-		xhr.onreadystatechange = function() 
-		{
-			if (this.readyState == 4 && this.status == 200) 
-			{
-				document.getElementById("colorSearchResult").innerHTML = "Color(s) has been retrieved";
-				let jsonObject = JSON.parse( xhr.responseText );
-				
-				for( let i=0; i<jsonObject.results.length; i++ )
-				{
-					colorList += jsonObject.results[i];
-					if( i < jsonObject.results.length - 1 )
-					{
-						colorList += "<br />\r\n";
-					}
-				}
-				
-				document.getElementsByTagName("p")[0].innerHTML = colorList;
-			}
-		};
-		xhr.send(jsonPayload);
-	}
-	catch(err)
-	{
-		document.getElementById("colorSearchResult").innerHTML = err.message;
-	}
-	
+function doRegister() {
+    // Get form values
+    let firstName = document.getElementById("registerFirstName").value;
+    let lastName = document.getElementById("registerLastName").value;
+    let login = document.getElementById("registerUsername").value;
+    let password = document.getElementById("registerPassword").value;
+
+    // Clear any previous error messages
+    document.getElementById("registerResult").innerHTML = "";
+    
+    // Create the payload
+    let tmp = {
+        firstName: firstName,
+        lastName: lastName,
+        login: login,
+        password: password
+    };
+    let jsonPayload = JSON.stringify(tmp);
+    
+    let url = urlBase + '/Register.' + extension;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+    xhr.setRequestHeader("Accept", "application/json");
+    
+    // Add error handling for CORS
+    xhr.onerror = function() {
+        document.getElementById("registerResult").innerHTML = "Error: Cannot connect to the server";
+    };
+    
+    try {
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    let jsonObject = JSON.parse(xhr.responseText);
+                    
+                    if (jsonObject.error) {
+                        document.getElementById("registerResult").innerHTML = jsonObject.error;
+                        document.getElementById("registerResult").style.display = "block";
+                        return;
+                    }
+                    
+                    // Registration successful
+                    document.getElementById("registerResult").className = "alert alert-success";
+                    document.getElementById("registerResult").innerHTML = "Registration successful! Redirecting to login...";
+                    document.getElementById("registerResult").style.display = "block";
+                    
+                    // Clear the form
+                    document.getElementById("registerForm").reset();
+                    
+                    // Redirect to login after a short delay
+                    setTimeout(function() {
+                        window.location.href = "auth.html";
+                    }, 2000);
+                    
+                } else {
+                    document.getElementById("registerResult").innerHTML = "Server returned status: " + this.status;
+                    document.getElementById("registerResult").style.display = "block";
+                }
+            }
+        };
+        xhr.send(jsonPayload);
+    }
+    catch(err) {
+        document.getElementById("registerResult").innerHTML = err.message;
+        document.getElementById("registerResult").style.display = "block";
+        console.error("Registration error:", err);
+    }
+    
+    return false;
 }
 
 // Dashboard initialization

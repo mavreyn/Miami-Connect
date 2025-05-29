@@ -7,58 +7,41 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
         <script type="text/javascript" src="js/code.js"></script>
-</head>
-<body>
-    <div class="welcome-container">
-        <div class="logo-section">
-            <h1 class="display-4">Contact Manager</h1>
-            <p class="lead">Manage your contacts efficiently and securely</p>
-        </div>
+    </head>
+    <body>
+        <div class="welcome-container">
+            <div class="hero-section text-center">
+                <h1 class="display-2">Contact Manager</h1>
+                <p class="lead mb-5">Your personal contact management solution. Simple, secure, and efficient.</p>
+                
+                <div class="cta-buttons">
+                    <a href="auth.html" class="btn btn-primary btn-lg me-3">Login</a>
+                    <a href="auth.html" class="btn btn-outline-primary btn-lg">Register</a>
+                </div>
 
-        <div class="auth-cards">
-            <!-- Login Card -->
-            <div class="auth-card">
-                <h2 class="h4 mb-4">Login</h2>
-                <div id="loginResult" class="alert alert-danger" style="display: none;"></div>
-                <form onsubmit="doLogin(); return false;">
-                    <div class="form-group">
-                        <label for="loginUsername">Username</label>
-                        <input type="text" class="form-control" id="loginUsername" required>
+                <div class="features mt-5">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <h3>Organize</h3>
+                                <p>Keep all your contacts organized in one place</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <h3>Secure</h3>
+                                <p>Your data is protected with secure authentication</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <h3>Easy</h3>
+                                <p>Simple and intuitive interface for managing contacts</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" class="form-control" id="loginPassword" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </form>
-            </div>
-
-            <!-- Register Card -->
-            <div class="auth-card">
-                <h2 class="h4 mb-4">Register</h2>
-                <div id="registerResult" class="alert alert-danger" style="display: none;"></div>
-                <form id="registerForm">
-                    <div class="form-group">
-                        <label for="registerFirstName">First Name</label>
-                        <input type="text" class="form-control" id="registerFirstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerLastName">Last Name</label>
-                        <input type="text" class="form-control" id="registerLastName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerUsername">Username</label>
-                        <input type="text" class="form-control" id="registerUsername" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerPassword">Password</label>
-                        <input type="password" class="form-control" id="registerPassword" required>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">Register</button>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-
-</body>
+    </body>
 </html>

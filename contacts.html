@@ -42,25 +42,57 @@
                 </p>
             </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Quick Stats</h5>
-                        <p class="card-text">Total Contacts: <span id="totalContacts">0</span></p>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Quick Stats</h5>
+                            <p class="card-text">Total Contacts: <span id="totalContacts">0</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Quick Actions</h5>
+                            <button class="btn btn-primary me-2" onclick="showAddContact();">Add New Contact</button>
+                            <button class="btn btn-secondary" onclick="showSearchContacts();">Search Contacts</button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Quick Actions</h5>
-                        <button class="btn btn-primary me-2" onclick="showAddContact();">Add New Contact</button>
-                        <button class="btn btn-secondary" onclick="showSearchContacts();">Search Contacts</button>
+
+            <!-- Search and Results Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Search Contacts</h5>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="searchInput" 
+                                       placeholder="Start typing to search contacts..." 
+                                       oninput="searchContacts(this.value);">
+                            </div>
+                            <div id="searchResult" class="alert alert-info" style="display: none;"></div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="contactsTableBody">
+                                        <!-- Contact rows will be inserted here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>
