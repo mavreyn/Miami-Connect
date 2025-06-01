@@ -895,8 +895,9 @@ function toggleViceMode() {
     const btn = document.getElementById('viceModeBtn');
     const container = document.getElementById('viceAnimationContainer');
     
-    // Reset audio to start
+    // Reset audio to start and set volume to 25%
     audio.currentTime = 0;
+    audio.volume = 0.25;
     audio.play();
     
     // Show random quote
