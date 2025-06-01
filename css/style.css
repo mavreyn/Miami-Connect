@@ -1,3 +1,6 @@
+@import url('https://fonts.cdnfonts.com/css/lazer84');
+@import url('https://fonts.cdnfonts.com/css/eurostile');
+
 /* CSS Variables - Miami Vice Theme */
 :root {
     /* Primary Colors */
@@ -11,9 +14,6 @@
     --miami-navy: #1A1B4B;
     --miami-white: #F5F5FF;
 }
-
-@import url('https://fonts.cdnfonts.com/css/lazer84');
-@import url('https://fonts.cdnfonts.com/css/eurostile');
 
 /* General Styles */
 body {
@@ -88,9 +88,9 @@ body {
 .hero-content {
     position: relative;
     z-index: 1;
-    max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 1rem;
 }
 
 .features {
@@ -156,13 +156,17 @@ body {
     background: white;
     border-radius: 10px;
     padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     height: 100%;
     transition: transform 0.2s;
+    border: 3px solid #000;
+    box-shadow: 0 0 15px var(--miami-pink),
+                inset 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 .feature-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 0 25px var(--miami-pink),
+                inset 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 .feature-card h3 {
@@ -187,45 +191,37 @@ body {
     display: flex;
     justify-content: center;
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
 }
 
 .auth-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.25);
     border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 2px 15px rgba(255, 255, 255, 0.1);
     width: 100%;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .auth-card h2 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     color: var(--miami-white);
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     text-align: center;
     text-shadow: 0 0 10px var(--miami-aqua),
                  0 0 20px var(--miami-aqua);
 }
 
-.logo-section {
-    text-align: center;
-    margin-bottom: 2rem;
+.auth-card form {
+    text-align: left;
 }
 
-.logo-section h1 {
-    font-size: 3.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.logo-section .lead {
-    font-size: 1.5rem;
-}
-
-/* Form Styles */
 .form-group {
     margin-bottom: 1.5rem;
     display: flex;
@@ -233,9 +229,14 @@ body {
 }
 
 .form-group label {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--miami-white);
+    font-family: 'Eurostile', sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px var(--miami-aqua);
 }
 
 .form-control {
@@ -251,7 +252,8 @@ body {
 }
 
 .form-control::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: #FFFFFF;
+    opacity: 0.6;
     font-weight: 500;
 }
 
@@ -284,33 +286,41 @@ body {
     font-size: 0.85rem;
     color: var(--miami-white);
     font-weight: 500;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
 }
 
 .requirement {
-    margin-bottom: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0;
+    text-align: center;
 }
 
-.requirement small,
-.requirement .text-muted {
-    color: var(--miami-white) !important;
-    opacity: 0.9;
-    font-weight: 500;
+.requirement small {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .requirement-icon {
     font-style: normal;
-    margin-right: 8px;
+    display: inline-block;
 }
 
 /* Table Action Buttons */
 .table .btn {
     min-width: 70px;
-    margin: 2px;
+    margin: 0 3px;
+    padding: 0.25rem 1rem;
 }
 
 .table td:last-child {
-    white-space: normal;
-    min-width: 80px;
+    width: 28%;
+    white-space: nowrap;
 }
 
 /* Delete Button Styles */
@@ -353,27 +363,28 @@ body {
 /* Column width distribution */
 .table th:first-child,
 .table td:first-child {
-    width: 15%; /* First name */
+    width: 12%;
 }
 
 .table th:nth-child(2),
 .table td:nth-child(2) {
-    width: 15%; /* Last name */
+    width: 12%;
 }
 
 .table th:nth-child(3),
 .table td:nth-child(3) {
-    width: 35%; /* Email - give it more space */
+    width: 30%;
 }
 
 .table th:nth-child(4),
 .table td:nth-child(4) {
-    width: 20%; /* Phone */
+    width: 18%;
 }
 
 .table th:last-child,
 .table td:last-child {
-    width: 15%; /* Actions */
+    width: 28%;
+    white-space: nowrap;
 }
 
 /* Make table container scrollable on very small screens */
@@ -394,6 +405,18 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .table td:last-child {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        justify-content: flex-start;
+    }
+    
+    .table .btn {
+        width: auto;
+        margin: 0;
+    }
+    
     .table td:nth-child(3) {
         max-width: 150px; /* Smaller max-width on mobile */
     }
@@ -427,22 +450,22 @@ body {
     .table td:last-child {
         width: 18%;
     }
+
+    .auth-card {
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 1.25rem;
+        margin: 0 0.5rem;
+    }
 }
 
 .container.mt-4 {
     margin-top: 1rem !important;
-}
-
-@media (max-width: 768px) {
-    .table td:last-child {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .table .btn {
-        width: 100%;
-        margin: 2px 0;
-    }
 }
 
 /* Dashboard Styles */
@@ -483,6 +506,15 @@ body {
     text-shadow: 0 0 10px var(--miami-aqua),
                  0 0 20px var(--miami-aqua),
                  0 0 30px var(--miami-pink);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-logo {
+    height: 40px;
+    width: auto;
+    filter: drop-shadow(0 0 10px var(--miami-aqua));
 }
 
 .navbar .btn-outline-light {
@@ -490,13 +522,22 @@ body {
     font-weight: 500;
 }
 
+.navbar .btn-outline-light:hover {
+    color: var(--miami-navy) !important;
+    background-color: var(--miami-white);
+    border-color: var(--miami-white);
+}
+
 .user-info h1 {
     color: var(--miami-white);
-    font-family: 'LAZER84', sans-serif;
-    font-size: 4rem;
-    text-shadow: 0 0 10px var(--miami-aqua),
-                 0 0 20px var(--miami-aqua),
-                 0 0 30px var(--miami-pink);
+    font-family: 'Eurostile', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 15px var(--miami-aqua),
+                 0 0 25px var(--miami-aqua),
+                 0 0 35px var(--miami-aqua);
 }
 
 /* Table styles */
@@ -697,15 +738,192 @@ body {
     margin-bottom: 1.5rem !important;
 }
 
-/* Adjust the action buttons spacing and style */
-.table .btn {
-    min-width: 70px;
-    margin: 2px;
-    border-radius: 25px;
-    padding: 0.4rem 1rem;
-}
-
 /* Search results text */
 #searchResult {
+    font-family: 'Eurostile', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
     color: var(--miami-white);
+    text-shadow: 0 0 10px #ff0000,
+                 0 0 20px #ff0000;
+    background: none;
+    border: none;
+    padding: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#searchResult.alert-miami {
+    background: none;
+    border: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+#viceModeBtn {
+    background: linear-gradient(45deg, var(--miami-aqua), var(--miami-pink));
+    border: none;
+    color: var(--miami-white) !important;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+#viceModeBtn::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--miami-pink), var(--miami-pink));
+    z-index: -1;
+    border-radius: 50px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#viceModeBtn:hover {
+    transform: scale(1.1);
+    color: var(--miami-white) !important;
+    box-shadow: 
+        0 0 20px var(--miami-pink),
+        0 0 35px var(--miami-pink);
+}
+
+#viceModeBtn:hover::before {
+    opacity: 0.6;
+    filter: blur(10px);
+}
+
+.navbar .d-flex.gap-2 {
+    gap: 1rem !important;
+}
+
+/* Vice Mode Animations */
+.vice-animation-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.palm-animation {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+    background-image: url('../assets/palm-neon.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 10px var(--miami-pink))
+           drop-shadow(0 0 20px var(--miami-pink));
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(120vh) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.8;
+    }
+    80% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes floatAcross {
+    0% {
+        transform: translateX(-100px) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.8;
+    }
+    80% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(calc(100vw + 100px)) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        transform: scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        transform: scale(1.2) rotate(180deg);
+        opacity: 0.8;
+    }
+    80% {
+        transform: scale(1.2) rotate(180deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(0.5) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.auth-card .text-center.mt-3 {
+    margin-top: 0.75rem !important;
+}
+
+.auth-card .text-center.mt-3 p {
+    margin-bottom: 0;
+}
+
+/* Custom Alert Styles */
+.alert-miami {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(128, 128, 128, 0.4);
+    color: var(--miami-white);
+    font-family: 'Eurostile', sans-serif;
+    text-shadow: none;
+    box-shadow: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+}
+
+.alert-miami .btn-close {
+    filter: invert(1);
+}
+
+/* Vice Mode Quote Alert */
+.alert-miami.vice-quote {
+    font-family: 'Eurostile', sans-serif;
+    font-size: 2.5rem;
+    text-align: center;
+    padding: 2rem 3rem;
+    background: rgba(0, 0, 0, 0.4);
+    max-width: 800px;
+    width: 90%;
+    text-shadow: 0 0 10px var(--miami-pink),
+                 0 0 20px var(--miami-pink);
+    line-height: 1.2;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.alert-miami.vice-quote .btn-close {
+    font-size: 1.5rem;
+    padding: 1rem;
+    margin-right: -0.5rem;
+    margin-top: -0.5rem;
 } 

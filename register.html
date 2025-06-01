@@ -24,45 +24,49 @@
                     <source src="assets/Synthwave_Sunset_Video_Generated.mp4" type="video/mp4">
                 </video>
                 <div class="hero-content">
-                    <h1 class="display-2 text-white">Miami Connect</h1>
-                    
-                    <div class="auth-card mx-auto">
-                        <h2 class="h4">New Partner</h2>
-                        <div id="registerResult" class="alert alert-danger" style="display: none;"></div>
-                        <form id="registerForm" onsubmit="return doRegister();">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="registerFirstName" placeholder="First Name (Keep it Cool)" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="registerLastName" placeholder="Last Name (Make it Count)" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="registerUsername" placeholder="Code Name" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="password" class="form-control" id="registerPassword" placeholder="Top Secret Password" required oninput="checkPasswordRequirements()">
-                                <div class="password-requirements">
-                                    <div class="requirement" id="lengthCheck">
-                                        <small class="text-muted">
-                                            <i class="requirement-icon">❌</i> Make it long (8+ characters)
-                                        </small>
-                                    </div>
-                                    <div class="requirement" id="letterCheck">
-                                        <small class="text-muted">
-                                            <i class="requirement-icon">❌</i> Throw in some letters
-                                        </small>
-                                    </div>
-                                    <div class="requirement" id="specialCheck">
-                                        <small class="text-muted">
-                                            <i class="requirement-icon">❌</i> Add special character (keep it exotic)
-                                        </small>
+                    <div class="auth-cards">
+                        <div class="auth-card">
+                            <h2>New Partner</h2>
+                            <div id="registerResult" class="alert alert-danger" style="display: none;"></div>
+                            <form id="registerForm" onsubmit="return doRegister();">
+                                <div class="form-group">
+                                    <label for="registerFirstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="registerFirstName" placeholder="Enter your first name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="registerLastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="registerLastName" placeholder="Enter your last name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="registerUsername" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="registerUsername" placeholder="Choose your username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="registerPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="registerPassword" placeholder="Create your password" required oninput="checkPasswordRequirements()">
+                                    <div class="password-requirements">
+                                        <div class="requirement" id="lengthCheck">
+                                            <small class="text-muted">
+                                                <i class="requirement-icon">❌</i>8+ characters
+                                            </small>
+                                        </div>
+                                        <div class="requirement" id="letterCheck">
+                                            <small class="text-muted">
+                                                <i class="requirement-icon">❌</i>Number
+                                            </small>
+                                        </div>
+                                        <div class="requirement" id="specialCheck">
+                                            <small class="text-muted">
+                                                <i class="requirement-icon">❌</i>Special character
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
+                                <button type="submit" class="btn btn-primary w-100">Join the Action</button>
+                            </form>
+                            <div class="text-center mt-3">
+                                <p>Already on the force? <a href="login.html">Login here</a></p>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Join the Action</button>
-                        </form>
-                        <div class="text-center mt-3">
-                            <p>Already on the force? <a href="login.html">Clock In Here</a></p>
                         </div>
                     </div>
 

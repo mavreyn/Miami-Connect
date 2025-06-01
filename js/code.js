@@ -12,6 +12,20 @@ let currentPage = 1;
 const contactsPerPage = 10;
 let totalResults = 0;
 
+// Miami Vice Quotes
+const miamiViceQuotes = [
+    "I'm a cop, and I'm walking a beat where you've never been.",
+    "This is my town, pal. I own the night.",
+    "Style... always style.",
+    "Hit 'em hard, hit 'em fast.",
+    "Welcome to Miami, where the heat is on!",
+    "Sometimes your best cover is no cover at all.",
+    "In this town, timing is everything.",
+    "Chances are, it's already too late.",
+    "Trust your instincts, they never lie.",
+    "The rules are different here."
+];
+
 function isValidEmail(email) {
     // Check if email contains @ and has a . after the @
     const atIndex = email.indexOf('@');
@@ -22,22 +36,22 @@ function isValidEmail(email) {
 }
 
 function checkPasswordRequirements() {
-    const password = document.getElementById("registerPassword").value;
+    let password = document.getElementById("registerPassword").value;
     let isValid = true;
-
-    // Check length
+    
+    // Check length requirement (8+ characters)
     const hasLength = password.length >= 8;
-    updateRequirement('lengthCheck', hasLength);
+    updateRequirement("lengthCheck", hasLength);
     isValid = isValid && hasLength;
-
-    // Check for letter
-    const hasLetter = /[a-zA-Z]/.test(password);
-    updateRequirement('letterCheck', hasLetter);
-    isValid = isValid && hasLetter;
-
-    // Check for special character
+    
+    // Check number requirement
+    const hasNumber = /[0-9]/.test(password);
+    updateRequirement("letterCheck", hasNumber);
+    isValid = isValid && hasNumber;
+    
+    // Check special character requirement
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    updateRequirement('specialCheck', hasSpecial);
+    updateRequirement("specialCheck", hasSpecial);
     isValid = isValid && hasSpecial;
 
     // Disable/enable register button based on validation
@@ -131,59 +145,81 @@ function doLogin()
 
 function saveCookie()
 {
-	let minutes = 20;
-	let date = new Date();
-	date.setTime(date.getTime()+(minutes*60*1000));	
-	document.cookie = "firstName=" + firstName + ",lastName=" + lastName + ",userId=" + userId + ";expires=" + date.toGMTString();
+    let minutes = 20;
+    let date = new Date();
+    date.setTime(date.getTime()+(minutes*60*1000));    
+    
+    // Create a session object
+    let sessionData = {
+        firstName: firstName,
+        lastName: lastName,
+        userId: userId,
+        timestamp: date.getTime()
+    };
+    
+    // Base64 encode the JSON string to handle special characters safely
+    let encodedData = btoa(JSON.stringify(sessionData));
+    
+    // Set a single cookie with the encoded data
+    document.cookie = `userSession=${encodedData};expires=${date.toGMTString()};path=/`;
 }
 
 function readCookie()
 {
-	userId = -1;
-	let data = document.cookie;
-	let splits = data.split(",");
-	for(var i = 0; i < splits.length; i++) 
-	{
-		let thisOne = splits[i].trim();
-		let tokens = thisOne.split("=");
-		if( tokens[0] == "firstName" )
-		{
-			firstName = tokens[1];
-		}
-		else if( tokens[0] == "lastName" )
-		{
-			lastName = tokens[1];
-		}
-		else if( tokens[0] == "userId" )
-		{
-			userId = parseInt( tokens[1].trim() );
-		}
-	}
-	
-	if( userId < 0 )
-	{
-		window.location.href = "index.html";
-	}
-	else
-	{
-		// Update the welcome message with the user's name
-		document.getElementById("userFullName").textContent = firstName;
-		
-		// Load contacts if search input exists
-		let searchInput = document.getElementById("searchInput");
-		if (searchInput) {
-			searchContacts(searchInput.value);
-		}
-	}
+    userId = -1;
+    let cookies = document.cookie.split(';');
+    
+    for(let cookie of cookies) 
+    {
+        let [name, value] = cookie.trim().split('=');
+        if(name === 'userSession') {
+            try {
+                // Decode the base64 string and parse the JSON
+                let sessionData = JSON.parse(atob(value));
+                
+                // Check if the session is still valid
+                if(sessionData && sessionData.timestamp > new Date().getTime()) {
+                    firstName = sessionData.firstName;
+                    lastName = sessionData.lastName;
+                    userId = sessionData.userId;
+                }
+            } catch(e) {
+                console.error("Error parsing session cookie:", e);
+            }
+            break;
+        }
+    }
+    
+    if(userId < 0)
+    {
+        window.location.href = "index.html";
+    }
+    else
+    {
+        let userFullName = document.getElementById("userFullName");
+        if(userFullName) {
+            userFullName.textContent = firstName + " " + lastName;
+        }
+        
+        let searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+            searchContacts(searchInput.value);
+        }
+    }
 }
 
 function doLogout()
 {
-	userId = 0;
-	firstName = "";
-	lastName = "";
-	document.cookie = "firstName= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
-	window.location.href = "index.html";
+    // Clear all session data
+    userId = 0;
+    firstName = "";
+    lastName = "";
+    
+    // Delete the session cookie
+    document.cookie = "userSession=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    
+    // Force reload the page
+    window.location.replace("index.html");
 }
 
 function showAddContact() {
@@ -247,9 +283,9 @@ function addContact() {
                 if (this.status == 200) {
                     let jsonObject = JSON.parse(xhr.responseText);
                     
-                    if (jsonObject.error) {
+                    if (jsonObject.error && jsonObject.error !== "") {
                         document.getElementById("addContactResult").innerHTML = jsonObject.error;
-                        document.getElementById("addContactResult").className = "alert alert-danger";
+                        document.getElementById("addContactResult").className = "alert alert-miami";
                         document.getElementById("addContactResult").style.display = "block";
                         return;
                     }
@@ -378,7 +414,7 @@ function deleteContact() {
                     
                     // Show success message
                     let alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alertDiv.className = 'alert alert-miami alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
                     alertDiv.setAttribute('role', 'alert');
                     alertDiv.innerHTML = `
                         Contact deleted successfully
@@ -442,7 +478,10 @@ function deleteContact() {
 
 // Add event listener for the confirm delete button when the page loads
 window.addEventListener('load', function() {
-    document.getElementById('confirmDeleteBtn').addEventListener('click', deleteContact);
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', deleteContact);
+    }
 });
 
 function showEditContact(firstName, lastName, phone, email) {
@@ -558,7 +597,7 @@ function updateContact() {
                     
                     // Show success message
                     let alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alertDiv.className = 'alert alert-miami alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
                     alertDiv.setAttribute('role', 'alert');
                     alertDiv.innerHTML = `
                         Contact updated successfully
@@ -631,7 +670,9 @@ function searchContacts(searchText) {
     // Don't search if the search text is empty
     if (!searchText.trim()) {
         document.getElementById("contactsTableBody").innerHTML = "";
-        document.getElementById("searchResult").style.display = "none";
+        document.getElementById("searchResult").innerHTML = "Enter a name to start tracking your contacts on these mean streets...";
+        document.getElementById("searchResult").className = "alert alert-miami";
+        document.getElementById("searchResult").style.display = "block";
         totalResults = 0;
         updatePaginationControls();
         return;
@@ -667,7 +708,7 @@ function searchContacts(searchText) {
                     
                     if (jsonObject.error && jsonObject.error !== "") {
                         document.getElementById("searchResult").innerHTML = jsonObject.error;
-                        document.getElementById("searchResult").className = "alert alert-info";
+                        document.getElementById("searchResult").className = "alert alert-miami";
                         document.getElementById("searchResult").style.display = "block";
                         totalResults = 0;
                         updatePaginationControls();
@@ -676,8 +717,8 @@ function searchContacts(searchText) {
                     
                     // Make sure we have results
                     if (!jsonObject.results || jsonObject.results.length === 0) {
-                        document.getElementById("searchResult").innerHTML = "No contacts found";
-                        document.getElementById("searchResult").className = "alert alert-info";
+                        document.getElementById("searchResult").innerHTML = "Looks like this contact's gone off the grid. No matches in our files.";
+                        document.getElementById("searchResult").className = "alert alert-miami";
                         document.getElementById("searchResult").style.display = "block";
                         totalResults = 0;
                         updatePaginationControls();
@@ -806,6 +847,7 @@ function doRegister() {
                     
                     if (jsonObject.error) {
                         document.getElementById("registerResult").innerHTML = jsonObject.error;
+                        document.getElementById("registerResult").className = "alert alert-miami";
                         document.getElementById("registerResult").style.display = "block";
                         return;
                     }
@@ -841,11 +883,85 @@ function doRegister() {
 }
 
 // Dashboard initialization
-window.addEventListener('load', function() {
+window.addEventListener('load', () => {
     if (document.getElementById('userFullName')) {  // Check if we're on the dashboard page
         readCookie();
-        // Update additional user info
-        document.getElementById('userFullName').textContent = firstName + ' ' + lastName;
-        document.getElementById('userId').textContent = userId;
     }
 });
+
+// Vice Mode Toggle
+function toggleViceMode() {
+    const audio = document.getElementById('viceAudio');
+    const btn = document.getElementById('viceModeBtn');
+    const container = document.getElementById('viceAnimationContainer');
+    
+    // Reset audio to start
+    audio.currentTime = 0;
+    audio.play();
+    
+    // Show random quote
+    const randomQuote = miamiViceQuotes[Math.floor(Math.random() * miamiViceQuotes.length)];
+    let quoteAlert = document.createElement('div');
+    quoteAlert.className = 'alert alert-miami vice-quote alert-dismissible fade show position-fixed top-50 start-50 translate-middle';
+    quoteAlert.setAttribute('role', 'alert');
+    quoteAlert.style.zIndex = '10000';
+    quoteAlert.innerHTML = `
+        ${randomQuote}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(quoteAlert);
+    
+    // Remove the quote after 3 seconds
+    setTimeout(() => quoteAlert.remove(), 3000);
+    
+    // Clear any existing animations
+    container.innerHTML = '';
+    
+    // Create multiple palm trees with different animations
+    const animations = ['floatUp', 'floatAcross', 'fadeInOut'];
+    const totalPalms = 15; // Number of palm trees to create
+    
+    for (let i = 0; i < totalPalms; i++) {
+        const palm = document.createElement('div');
+        palm.className = 'palm-animation';
+        
+        // Randomly select animation type
+        const animation = animations[Math.floor(Math.random() * animations.length)];
+        
+        // Random starting position and timing
+        const delay = Math.random() * 4; // Random delay up to 4 seconds
+        const duration = 4 + Math.random() * 4; // Animation duration between 4-8 seconds
+        
+        // Set random position based on animation type
+        if (animation === 'floatUp') {
+            palm.style.left = `${Math.random() * 100}vw`;
+        } else if (animation === 'floatAcross') {
+            palm.style.top = `${Math.random() * 100}vh`;
+        } else {
+            palm.style.left = `${Math.random() * 100}vw`;
+            palm.style.top = `${Math.random() * 100}vh`;
+        }
+        
+        // Apply animation
+        palm.style.animation = `${animation} ${duration}s ease-in-out ${delay}s`;
+        
+        // Random size variation
+        const size = 80 + Math.random() * 40; // Random size between 80-120px
+        palm.style.width = `${size}px`;
+        palm.style.height = `${size}px`;
+        
+        // Add to container
+        container.appendChild(palm);
+        
+        // Remove element after animation completes
+        setTimeout(() => {
+            palm.remove();
+        }, (duration + delay) * 1000);
+    }
+    
+    // Add active class temporarily to button
+    btn.classList.add('active');
+    setTimeout(() => {
+        btn.classList.remove('active');
+    }, 1000);
+}

@@ -1,63 +1,3 @@
-NEXT TIME
-- slight scroll on half screen register
-- Glow less on login/register heading
-- style front cards well
-- Reduce the copy on essential buttons
-- Welcome In Rick (slightly less exciting font)
-
-FUNNY
-- Easter eggs
-- Palm trees add?
-- Ferrari / speedboat across bottom?
-- Retro Spinners
-- Button for voiceover / quote
-- Gifs on errors / success "Contacts, Synthesized." "Your Rolodex Just Got Rad." "Retro Power. Modern Connection.""Tubular!"
-- Custom copy in error
-- CRT Scanlines
-
-ACCESSIBILITY
-- Ensure works well on iPhone, Skinny, Half, Full
-- Form labels
-- Consistency in navigation
-- Appropriate lighthouse contrast / test
-- Test in greyscale
-- ask what else needs to be checked
-- update readme with what is actually implemented
-
-TOUCHES
-- Custom 404 page?
-- Leineker login somewhere on the page (so he knows)
-- No contacts = cute thing there to get started or no matches = something there as well
-- Make about page with our selfies
-- env for keys / db login?
-- remove CORS? / change base URL?
-- Hover animations
-
-POWERPOINT
-- Title Slide
-- Members Page "In the heat of the night, we take care of business.",
-- Explain Tech
-- Show Gantt, USECASE, ERD
-- What went well / not well
-    CORS
-    Control Shift R
-- Lighthouse report for the pages
-- Show access 1 Endpoint w/ Swaggerhub
-- App demo / easter egg reveal
-- Time for questions
-
-PRESENT
-- study the code, know how it actually works
-    popups, redirects, styling
-- Find time to rehearse
-- Ensure swaggerhub is good
-- Clean up the github & README (make sure it is representative of our work)(put our faces in there as well)
-- Create our powerpoint
-- Proj spreadsheet fill out (update with new project title)
-- Slides on USB not Drive (shortURL as well)
-
----
-
 # 🌴 Miami Connect
 
 ![Miami Connect](assets/readme_banner.png)
@@ -70,8 +10,8 @@ Miami Connect is a stylish, 80s-inspired contact management system that brings t
 
 - **Rad Authentication System**: Secure login/register with neon-styled forms
 - **Tubular Contact Management**: Add, edit, and organize your contacts with style
-- **Maximum Security**: Data protection with modern security practices
-- **Totally Responsive**: Works smoothly across all devices, just like a Ferrari on Ocean Drive
+- **Some Security**: Data protection with modern(ish) security practices
+- **Totally Responsive**: Works smoothly across mostly big devices, just like a Ferrari on Ocean Drive
 - **Retro-Modern UI**: Glassmorphic cards, neon glows, and Miami sunset vibes
 
 ## 🎨 Design & Theme
@@ -98,7 +38,7 @@ Miami Connect features a carefully crafted aesthetic that includes:
 
 - **Frontend**:
   - HTML5
-  - CSS3 with custom animations
+  - CSS with custom animations
   - JavaScript (Vanilla)
   - Bootstrap 5.3.2
 
@@ -106,23 +46,21 @@ Miami Connect features a carefully crafted aesthetic that includes:
   - RESTful API architecture
   - (Un)securly hashed passwords with MD5
   - Contact data management
-  - CORS-enabled endpoints
 
 ## 💾 Usage Guide
 
 1. **Register**: Join the force with your credentials
 2. **Login**: Access your personal command center
-3. **Add Contacts**: Build your network with the "Add to Squad" feature
-4. **Manage**: Edit, delete, or search through your contacts
-5. **Stay Rad**: Enjoy the nostalgic vibes while staying organized
+3. **Manage**: Edit, delete, or search through your contacts
+4. **Stay Rad**: Enjoy the nostalgic vibes while staying organized
 
-## 🎮 Easter Eggs
+## 🎮 Vice Mode
 
-*There might be some totally tubular surprises hidden throughout the app... Keep your eyes peeled!*
+*There might be a totally tubular surprise button in the app. Keep your eyes peeled!*
 
 ## 📱 Responsive Design
 
-Miami Connect is optimized for:
+Miami Connect is probably going to work for:
 - 📱 Mobile devices
 - 💻 Tablets
 - 🖥️ Desktop screens
@@ -130,20 +68,11 @@ Miami Connect is optimized for:
 
 ## 🌟 Accessibility
 
-We've implemented various accessibility features:
-- ARIA labels
-- Keyboard navigation
+We've ensured accessibility checkpoints such as:
 - High contrast ratios
-- Screen reader compatibility
-- Color blindness considerations
-
-## 🔐 Security Features
-
-- Secure password hashing
-- Protected API endpoints
-- Session management
-- Input validation
-- XSS protection
+- Form labels
+- Consistent navigation
+- High Lighthouse Ratings
 
 ## 🙏 Acknowledgments
 
